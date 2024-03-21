@@ -1,4 +1,4 @@
-package main
+package autocomplete
 
 import (
 	"encoding/csv"
