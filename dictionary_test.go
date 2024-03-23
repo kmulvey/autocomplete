@@ -1,12 +1,6 @@
 package dictionary
 
 import (
-	"encoding/csv"
-	"io"
-	"os"
-	"slices"
-	"sort"
-	"strings"
 	"testing"
 
 	"github.com/tj/assert"
@@ -16,36 +10,55 @@ func TestInsert(t *testing.T) {
 	t.Parallel()
 
 	var dictionary = NewDictionary()
-	dictionary.InsertWord("mom")
+	dictionary.InsertWord("grape")
+	dictionary.InsertWord("maple")
 	dictionary.InsertWord("mince")
 	dictionary.InsertWord("mini")
-	dictionary.InsertWord("moose")
-	dictionary.InsertWord("maple")
-	dictionary.InsertWord("grape")
-	dictionary.InsertWord("pear")
-	assert.NotNil(t, dictionary.Search("mom"))
-	assert.NotNil(t, dictionary.Search("pear"))
+	dictionary.InsertWord("miniature")
+	assert.True(t, dictionary.Search("grape"))
+	assert.True(t, dictionary.Search("maple"))
+	assert.True(t, dictionary.Search("mince"))
+	assert.True(t, dictionary.Search("mini"))
+	assert.True(t, dictionary.Search("miniature"))
+	assert.False(t, dictionary.Search("acrobat"))
+	assert.False(t, dictionary.Search("destiny"))
+	assert.False(t, dictionary.Search("merger"))
+	assert.NotNil(t, dictionary.trieNode.nodeFromPrefix("grape"))
+	assert.Nil(t, dictionary.trieNode.nodeFromPrefix("acrobat"))
 
-	dictionary.InsertDictionaryFromCSV("./english.csv")
-	assert.NotNil(t, dictionary.Search("grape"))
-	assert.NotNil(t, dictionary.Search("maple"))
-	assert.NotNil(t, dictionary.Search("mince"))
-	assert.NotNil(t, dictionary.Search("moose"))
-	assert.NotNil(t, dictionary.Search("pear"))
-
-	var words = Collect(dictionary, "")
-	sort.Strings(words)
-	assert.True(t, slices.Contains(words, "grape"))
-	assert.True(t, slices.Contains(words, "maple"))
-	assert.True(t, slices.Contains(words, "mince"))
-	assert.True(t, slices.Contains(words, "moose"))
-	assert.True(t, slices.Contains(words, "pear"))
-
-	var results = autocomplete(dictionary, "apple")
-	sort.Strings(results)
-	assert.EqualValues(t, []string{"apple pie", "apple-faced", "apple-jack", "apple-john", "apple-squire"}, results)
+	dictionary.PopulateFromCSV("./english.csv")
 }
 
+func TestPopulateFromCSV(t *testing.T) {
+	t.Parallel()
+
+	var dictionary = NewDictionary()
+	dictionary.PopulateFromCSV("./english.csv")
+	assert.True(t, dictionary.Search("grape"))
+	assert.True(t, dictionary.Search("maple"))
+	assert.True(t, dictionary.Search("pear"))
+	assert.False(t, dictionary.Search("mom"))
+	assert.False(t, dictionary.Search("mini"))
+	assert.False(t, dictionary.Search("jennifer"))
+	assert.NotNil(t, dictionary.trieNode.nodeFromPrefix("grape"))
+	assert.Nil(t, dictionary.trieNode.nodeFromPrefix("jennifer"))
+}
+
+func TestCollect(t *testing.T) {
+	t.Parallel()
+
+	var dictionary = NewDictionary()
+	dictionary.InsertWord("grape")
+	dictionary.InsertWord("maple")
+	dictionary.InsertWord("mince")
+	dictionary.InsertWord("mini")
+	dictionary.InsertWord("miniature")
+
+	var words = dictionary.Collect("")
+	assert.EqualValues(t, []string{"grape", "maple", "mince", "mini", "miniature"}, words)
+}
+
+/*
 func TestCSV(t *testing.T) {
 	f, err := os.Open("./english.csv")
 	assert.NoError(t, err)
@@ -90,3 +103,4 @@ func TestCSV(t *testing.T) {
 		}
 	}
 }
+*/

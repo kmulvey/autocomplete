@@ -4,6 +4,7 @@ import (
 	"encoding/csv"
 	"io"
 	"os"
+	"sort"
 	"strings"
 	"unicode"
 )
@@ -26,7 +27,7 @@ func NewDictionary() *Dictionary {
 	return &Dictionary{&trieNode{Children: make(map[string]*trieNode, 26)}}
 }
 
-func (d *Dictionary) PopulateDictionaryFromCSV(file string) error {
+func (d *Dictionary) PopulateFromCSV(file string) error {
 	f, err := os.Open(file)
 	if err != nil {
 		return err
@@ -110,8 +111,13 @@ func (d *Dictionary) Search(word string) bool {
 	return lastNode.EndOfWord
 }
 
-// Collect recursively gathers all words in the Trie
-func Collect(node *trieNode, prefix string) []string {
+// Collect returns the dictionary as a sorted slice
+func (d *Dictionary) Collect(prefix string) []string {
+	return collect(d.trieNode, prefix)
+}
+
+// collect recursively gathers all words in the Trie and returns a sorted slice
+func collect(node *trieNode, prefix string) []string {
 
 	if node == nil {
 		return nil
@@ -122,8 +128,10 @@ func Collect(node *trieNode, prefix string) []string {
 	}
 
 	for char, node := range node.Children {
-		words = append(words, Collect(node, prefix+char)...)
+		words = append(words, collect(node, prefix+char)...)
 	}
+
+	sort.Strings(words)
 
 	return words
 }
@@ -133,7 +141,7 @@ func (d *Dictionary) Autocomplete(prefix string) []string {
 }
 
 func autocomplete(node *trieNode, prefix string) []string {
-	var results = Collect(node.nodeFromPrefix(prefix), "")
+	var results = collect(node.nodeFromPrefix(prefix), "")
 	if len(results) == 0 {
 		return results
 	}
