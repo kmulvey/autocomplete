@@ -1,6 +1,11 @@
 package dictionary
 
 import (
+	"encoding/csv"
+	"io"
+	"os"
+	"sort"
+	"strings"
 	"testing"
 
 	"github.com/tj/assert"
@@ -58,8 +63,8 @@ func TestCollect(t *testing.T) {
 	assert.EqualValues(t, []string{"grape", "maple", "mince", "mini", "miniature"}, words)
 }
 
-/*
-func TestCSV(t *testing.T) {
+// TestEnglishCSV tests that the whole dictionary can be added without error
+func TestEnglishCSV(t *testing.T) {
 	f, err := os.Open("./english.csv")
 	assert.NoError(t, err)
 
@@ -91,9 +96,9 @@ func TestCSV(t *testing.T) {
 	sort.Strings(uniqWordsArr)
 	assert.Equal(t, 111723, len(uniqWordsArr))
 
-	var trie = NewTrie()
-	trie.InsertDictionaryFromCSV("./english.csv")
-	var words = Collect(trie, "")
+	var dictionary = NewDictionary()
+	dictionary.PopulateFromCSV("./english.csv")
+	var words = dictionary.Collect("")
 	sort.Strings(words)
 	assert.Equal(t, 111723, len(words))
 
@@ -103,4 +108,3 @@ func TestCSV(t *testing.T) {
 		}
 	}
 }
-*/
