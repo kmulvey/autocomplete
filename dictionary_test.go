@@ -16,6 +16,7 @@ func TestInsert(t *testing.T) {
 
 	var dictionary = NewDictionary()
 	dictionary.InsertWord("grape")
+	assert.Equal(t, "g", dictionary.trieNode.Children["g"].String())
 	dictionary.InsertWord("maple")
 	dictionary.InsertWord("mince")
 	dictionary.InsertWord("mini")
@@ -30,8 +31,6 @@ func TestInsert(t *testing.T) {
 	assert.False(t, dictionary.Search("merger"))
 	assert.NotNil(t, dictionary.trieNode.nodeFromPrefix("grape"))
 	assert.Nil(t, dictionary.trieNode.nodeFromPrefix("acrobat"))
-
-	assert.NoError(t, dictionary.PopulateFromCSV("./english.csv"))
 }
 
 func TestPopulateFromCSV(t *testing.T) {
