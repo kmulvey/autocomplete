@@ -6,7 +6,6 @@ import (
 	"os"
 	"sort"
 	"strings"
-	"unicode"
 )
 
 type Dictionary struct {
@@ -44,8 +43,8 @@ func (d *Dictionary) PopulateFromCSV(file string) error {
 			return f.Close()
 		}
 
-		// we dont want the file header or words with weird characters
-		if !header && isASCII(rec[0]) {
+		// we dont want the file header
+		if !header {
 			d.InsertWord(rec[0])
 		}
 		header = false
@@ -179,14 +178,4 @@ func (t *trieNode) nodeFromPrefix(word string) *trieNode {
 	}
 
 	return lastNode
-}
-
-// isASCII returns true if the whole word is ascii
-func isASCII(s string) bool {
-	for _, c := range s {
-		if c > unicode.MaxASCII {
-			return false
-		}
-	}
-	return true
 }

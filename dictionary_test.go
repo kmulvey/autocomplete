@@ -95,7 +95,7 @@ func TestEnglishCSV(t *testing.T) {
 		}
 		assert.NoError(t, err)
 
-		if !header && isASCII(rec[0]) {
+		if !header {
 			uniqWordsMap[strings.ToLower(rec[0])] = struct{}{}
 		}
 		header = false
