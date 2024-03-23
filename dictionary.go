@@ -26,7 +26,7 @@ func NewDictionary() *Dictionary {
 	return &Dictionary{&trieNode{Children: make(map[string]*trieNode, 26)}}
 }
 
-func (t *trieNode) InsertDictionaryFromCSV(file string) error {
+func (d *Dictionary) InsertDictionaryFromCSV(file string) error {
 	f, err := os.Open(file)
 	if err != nil {
 		return err
@@ -45,7 +45,7 @@ func (t *trieNode) InsertDictionaryFromCSV(file string) error {
 
 		// we dont want the file header or words with wierd characters
 		if !header && isASCII(rec[0]) {
-			t.InsertWord(rec[0])
+			d.InsertWord(rec[0])
 		}
 		header = false
 	}
@@ -54,14 +54,14 @@ func (t *trieNode) InsertDictionaryFromCSV(file string) error {
 }
 
 // InsertWord adds the word to the dictionary
-func (t *trieNode) InsertWord(word string) {
+func (d *Dictionary) InsertWord(word string) {
 
 	word = strings.ToLower(word)
 
-	var lastNode, found = t.Children[string(word[0])]
+	var lastNode, found = d.trieNode.Children[string(word[0])]
 	if !found {
-		t.Children[string(word[0])] = &trieNode{Letter: string(word[0]), Children: make(map[string]*trieNode, 2)}
-		lastNode = t.Children[string(word[0])]
+		d.trieNode.Children[string(word[0])] = &trieNode{Letter: string(word[0]), Children: make(map[string]*trieNode, 2)}
+		lastNode = d.trieNode.Children[string(word[0])]
 	}
 
 	if len(word) == 1 {
