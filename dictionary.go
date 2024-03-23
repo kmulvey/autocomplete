@@ -26,7 +26,7 @@ func NewDictionary() *Dictionary {
 	return &Dictionary{&trieNode{Children: make(map[string]*trieNode, 26)}}
 }
 
-func (d *Dictionary) InsertDictionaryFromCSV(file string) error {
+func (d *Dictionary) PopulateDictionaryFromCSV(file string) error {
 	f, err := os.Open(file)
 	if err != nil {
 		return err
@@ -89,10 +89,10 @@ func (d *Dictionary) InsertWord(word string) {
 }
 
 // Search returns true if the given word is found in the trie
-func (t *trieNode) Search(word string) bool {
+func (d *Dictionary) Search(word string) bool {
 
 	word = strings.ToLower(word)
-	var lastNode = t.Children[string(word[0])]
+	var lastNode = d.trieNode.Children[string(word[0])]
 	if lastNode == nil {
 		return false
 	}
@@ -108,28 +108,6 @@ func (t *trieNode) Search(word string) bool {
 	}
 
 	return lastNode.EndOfWord
-}
-
-// NodeFromPrefix is similar to Search() but returns a node
-func (t *trieNode) NodeFromPrefix(word string) *trieNode {
-
-	word = strings.ToLower(word)
-	var lastNode = t.Children[string(word[0])]
-	if lastNode == nil {
-		return nil
-	}
-
-	for i := 1; i < len(word); i++ {
-		var currLetter = string(word[i])
-
-		if _, found := lastNode.Children[currLetter]; !found {
-			return nil
-		}
-
-		lastNode = lastNode.Children[currLetter]
-	}
-
-	return lastNode
 }
 
 // Collect recursively gathers all words in the Trie
@@ -155,7 +133,7 @@ func (d *Dictionary) Autocomplete(prefix string) []string {
 }
 
 func autocomplete(node *trieNode, prefix string) []string {
-	var results = Collect(node.NodeFromPrefix(prefix), "")
+	var results = Collect(node.nodeFromPrefix(prefix), "")
 	if len(results) == 0 {
 		return results
 	}
@@ -169,6 +147,28 @@ func autocomplete(node *trieNode, prefix string) []string {
 	}
 
 	return results
+}
+
+// nodeFromPrefix is similar to Search() but returns a node
+func (t *trieNode) nodeFromPrefix(word string) *trieNode {
+
+	word = strings.ToLower(word)
+	var lastNode = t.Children[string(word[0])]
+	if lastNode == nil {
+		return nil
+	}
+
+	for i := 1; i < len(word); i++ {
+		var currLetter = string(word[i])
+
+		if _, found := lastNode.Children[currLetter]; !found {
+			return nil
+		}
+
+		lastNode = lastNode.Children[currLetter]
+	}
+
+	return lastNode
 }
 
 func isASCII(s string) bool {
