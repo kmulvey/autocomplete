@@ -1,4 +1,4 @@
-module github.com/kmulvey/autocomplete
+module github.com/kmulvey/dictionary
 
 go 1.22.1
 

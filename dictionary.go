@@ -1,4 +1,4 @@
-package autocomplete
+package dictionary
 
 import (
 	"encoding/csv"
