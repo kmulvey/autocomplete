@@ -1,0 +1,3 @@
+# Dictionary
+
+[![Dictionary](https://github.com/kmulvey/dictionary/actions/workflows/release_build.yml/badge.svg)](https://github.com/kmulvey/realesrgan-scheduler/actions/workflows/release_build.yml) [![codecov](https://codecov.io/gh/kmulvey/dictionary/branch/main/graph/badge.svg?token=XpJ5kCJzsn)](https://codecov.io/gh/kmulvey/dictionary) [![Go Report Card](https://goreportcard.com/badge/github.com/kmulvey/dictionary)](https://goreportcard.com/report/github.com/kmulvey/dictionary) [![Go Reference](https://pkg.go.dev/badge/github.com/kmulvey/dictionary.svg)](https://pkg.go.dev/github.com/kmulvey/dictionary)
