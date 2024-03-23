@@ -31,14 +31,14 @@ func TestInsert(t *testing.T) {
 	assert.NotNil(t, dictionary.trieNode.nodeFromPrefix("grape"))
 	assert.Nil(t, dictionary.trieNode.nodeFromPrefix("acrobat"))
 
-	dictionary.PopulateFromCSV("./english.csv")
+	assert.NoError(t, dictionary.PopulateFromCSV("./english.csv"))
 }
 
 func TestPopulateFromCSV(t *testing.T) {
 	t.Parallel()
 
 	var dictionary = NewDictionary()
-	dictionary.PopulateFromCSV("./english.csv")
+	assert.NoError(t, dictionary.PopulateFromCSV("./english.csv"))
 	assert.True(t, dictionary.Search("grape"))
 	assert.True(t, dictionary.Search("maple"))
 	assert.True(t, dictionary.Search("pear"))
@@ -97,7 +97,7 @@ func TestEnglishCSV(t *testing.T) {
 	assert.Equal(t, 111723, len(uniqWordsArr))
 
 	var dictionary = NewDictionary()
-	dictionary.PopulateFromCSV("./english.csv")
+	assert.NoError(t, dictionary.PopulateFromCSV("./english.csv"))
 	var words = dictionary.Collect("")
 	sort.Strings(words)
 	assert.Equal(t, 111723, len(words))
