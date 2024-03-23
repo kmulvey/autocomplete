@@ -9,7 +9,7 @@ import (
 )
 
 type Dictionary struct {
-	trieNode
+	*trieNode
 }
 
 type trieNode struct {
@@ -23,9 +23,7 @@ func (l trieNode) String() string {
 }
 
 func NewDictionary() *Dictionary {
-	var trie = trieNode{Children: make(map[string]*trieNode, 26)}
-
-	return &Dictionary{trie}
+	return &Dictionary{&trieNode{Children: make(map[string]*trieNode, 26)}}
 }
 
 func (t *trieNode) InsertDictionaryFromCSV(file string) error {
@@ -152,7 +150,11 @@ func Collect(node *trieNode, prefix string) []string {
 	return words
 }
 
-func Autocomplete(node *trieNode, prefix string) []string {
+func (d *Dictionary) Autocomplete(prefix string) []string {
+	return autocomplete(d.trieNode, prefix)
+}
+
+func autocomplete(node *trieNode, prefix string) []string {
 	var results = Collect(node.NodeFromPrefix(prefix), "")
 	if len(results) == 0 {
 		return results

@@ -41,7 +41,7 @@ func TestInsert(t *testing.T) {
 	assert.True(t, slices.Contains(words, "moose"))
 	assert.True(t, slices.Contains(words, "pear"))
 
-	var results = Autocomplete(trie, "apple")
+	var results = autocomplete(trie, "apple")
 	sort.Strings(results)
 	assert.EqualValues(t, []string{"apple pie", "apple-faced", "apple-jack", "apple-john", "apple-squire"}, results)
 }
