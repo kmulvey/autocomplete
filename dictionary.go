@@ -44,7 +44,7 @@ func (d *Dictionary) PopulateFromCSV(file string) error {
 			return f.Close()
 		}
 
-		// we dont want the file header or words with wierd characters
+		// we dont want the file header or words with weird characters
 		if !header && isASCII(rec[0]) {
 			d.InsertWord(rec[0])
 		}
