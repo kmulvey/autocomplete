@@ -8,32 +8,32 @@ import (
 	"unicode"
 )
 
-type Trie struct {
+type Dictionary struct {
+	trieNode
+}
+
+type trieNode struct {
 	Letter    string
-	Children  map[string]*Trie
+	Children  map[string]*trieNode
 	EndOfWord bool
 }
 
-func (l Trie) String() string {
+func (l trieNode) String() string {
 	return l.Letter
 }
 
-func NewTrie() *Trie {
-	var trie = Trie{Children: make(map[string]*Trie, 26)}
+func NewDictionary() *Dictionary {
+	var trie = trieNode{Children: make(map[string]*trieNode, 26)}
 
-	return &trie
+	return &Dictionary{trie}
 }
 
-func (t *Trie) InsertDictionaryFromCSV(file string) error {
+func (t *trieNode) InsertDictionaryFromCSV(file string) error {
 	f, err := os.Open(file)
 	if err != nil {
 		return err
 	}
 
-	// remember to close the file at the end of the program
-	defer f.Close()
-
-	// read csv values using csv.Reader
 	csvReader := csv.NewReader(f)
 	var header = true
 	for {
@@ -42,25 +42,27 @@ func (t *Trie) InsertDictionaryFromCSV(file string) error {
 			break
 		}
 		if err != nil {
-			return err
+			return f.Close()
 		}
-		// do something with read line
+
+		// we dont want the file header or words with wierd characters
 		if !header && isASCII(rec[0]) {
 			t.InsertWord(rec[0])
 		}
 		header = false
 	}
 
-	return nil
+	return f.Close()
 }
 
-func (t *Trie) InsertWord(word string) {
+// InsertWord adds the word to the dictionary
+func (t *trieNode) InsertWord(word string) {
 
 	word = strings.ToLower(word)
 
 	var lastNode, found = t.Children[string(word[0])]
 	if !found {
-		t.Children[string(word[0])] = &Trie{Letter: string(word[0]), Children: make(map[string]*Trie, 2)}
+		t.Children[string(word[0])] = &trieNode{Letter: string(word[0]), Children: make(map[string]*trieNode, 2)}
 		lastNode = t.Children[string(word[0])]
 	}
 
@@ -74,11 +76,11 @@ func (t *Trie) InsertWord(word string) {
 		var endOfWord = i == len(word)-1
 
 		if lastNode.Children == nil {
-			lastNode.Children = make(map[string]*Trie, 2)
+			lastNode.Children = make(map[string]*trieNode, 2)
 		}
 
 		if _, exists := lastNode.Children[currLetter]; !exists {
-			lastNode.Children[currLetter] = &Trie{Letter: currLetter, Children: make(map[string]*Trie, 2), EndOfWord: endOfWord}
+			lastNode.Children[currLetter] = &trieNode{Letter: currLetter, Children: make(map[string]*trieNode, 2), EndOfWord: endOfWord}
 		}
 
 		if !lastNode.Children[currLetter].EndOfWord { // if its already true dont reset it to false for a longer word
@@ -88,7 +90,30 @@ func (t *Trie) InsertWord(word string) {
 	}
 }
 
-func (t *Trie) Search(word string) *Trie {
+// Search returns true if the given word is found in the trie
+func (t *trieNode) Search(word string) bool {
+
+	word = strings.ToLower(word)
+	var lastNode = t.Children[string(word[0])]
+	if lastNode == nil {
+		return false
+	}
+
+	for i := 1; i < len(word); i++ {
+		var currLetter = string(word[i])
+
+		if _, found := lastNode.Children[currLetter]; !found {
+			return false
+		}
+
+		lastNode = lastNode.Children[currLetter]
+	}
+
+	return lastNode.EndOfWord
+}
+
+// NodeFromPrefix is similar to Search() but returns a node
+func (t *trieNode) NodeFromPrefix(word string) *trieNode {
 
 	word = strings.ToLower(word)
 	var lastNode = t.Children[string(word[0])]
@@ -106,15 +131,11 @@ func (t *Trie) Search(word string) *Trie {
 		lastNode = lastNode.Children[currLetter]
 	}
 
-	if lastNode.EndOfWord {
-		return lastNode
-	}
-
-	return nil
+	return lastNode
 }
 
 // Collect recursively gathers all words in the Trie
-func Collect(node *Trie, prefix string) []string {
+func Collect(node *trieNode, prefix string) []string {
 
 	if node == nil {
 		return nil
@@ -131,8 +152,8 @@ func Collect(node *Trie, prefix string) []string {
 	return words
 }
 
-func Autocomplete(node *Trie, prefix string) []string {
-	var results = Collect(node.Search(prefix), "")
+func Autocomplete(node *trieNode, prefix string) []string {
+	var results = Collect(node.NodeFromPrefix(prefix), "")
 	if len(results) == 0 {
 		return results
 	}
