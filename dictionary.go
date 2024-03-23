@@ -136,10 +136,12 @@ func collect(node *trieNode, prefix string) []string {
 	return words
 }
 
+// Autocomplete returns a slice of words gathered from the leaf nodes under the prefix node
 func (d *Dictionary) Autocomplete(prefix string) []string {
 	return autocomplete(d.trieNode, prefix)
 }
 
+// autocomplete recursivly gathers words from the leaf nodes under the prefix node
 func autocomplete(node *trieNode, prefix string) []string {
 	var results = collect(node.nodeFromPrefix(prefix), "")
 	if len(results) == 0 {
@@ -179,6 +181,7 @@ func (t *trieNode) nodeFromPrefix(word string) *trieNode {
 	return lastNode
 }
 
+// isASCII returns true if the whole word is ascii
 func isASCII(s string) bool {
 	for _, c := range s {
 		if c > unicode.MaxASCII {
