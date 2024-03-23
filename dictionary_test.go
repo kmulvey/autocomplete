@@ -62,6 +62,21 @@ func TestCollect(t *testing.T) {
 	assert.EqualValues(t, []string{"grape", "maple", "mince", "mini", "miniature"}, words)
 }
 
+func TestAutocomplete(t *testing.T) {
+	t.Parallel()
+
+	var dictionary = NewDictionary()
+	dictionary.InsertWord("mince")
+	dictionary.InsertWord("mini")
+	dictionary.InsertWord("miniature")
+
+	var words = dictionary.Autocomplete("min")
+	assert.EqualValues(t, []string{"mince", "mini", "miniature"}, words)
+
+	words = dictionary.Autocomplete("not")
+	assert.Nil(t, words)
+}
+
 // TestEnglishCSV tests that the whole dictionary can be added without error
 func TestEnglishCSV(t *testing.T) {
 	f, err := os.Open("./english.csv")
