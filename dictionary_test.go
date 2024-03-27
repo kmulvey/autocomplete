@@ -122,3 +122,9 @@ func TestEnglishCSV(t *testing.T) {
 		}
 	}
 }
+
+func TestLevenshteinRecursive(t *testing.T) {
+	t.Parallel()
+
+	assert.Equal(t, 3, levenshteinRecursive("kitten", "sitting", 6, 7))
+}
